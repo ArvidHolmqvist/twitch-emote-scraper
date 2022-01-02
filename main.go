@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
+
 	//"emote_scraper/emotes"
 	"bufio"
 	"net/textproto"
@@ -13,10 +15,17 @@ import (
 	"time"
 )
 
+type messageData struct {
+	timestamp  time.Time
+	channel    string
+	senderName string
+	message    string
+}
+
 func getConnnection() net.Conn {
 	conn, err := net.Dial("tcp", "irc.chat.twitch.tv:6667")
 	if err != nil {
-		panic(err)
+		log.Fatal("could not establish a connection to the twitch irc, error: ", err)
 	}
 	return conn
 }
@@ -26,7 +35,7 @@ func disconnect(conn net.Conn) {
 }
 
 func logon(conn net.Conn) {
-	sendData(conn, "PASS oauth:95ajeukcnfk38v3rhog4fvwgir4hzq")
+	sendData(conn, "PASS oauth:"+os.Getenv("twitch_oath"))
 	sendData(conn, "NICK emote_scraper")
 }
 
